@@ -16,6 +16,7 @@ import org.springframework.test.web.servlet.MockMvc;
 
 import com.sundar.time.model.Time;
 import com.sundar.time.service.TimeService;
+import com.sundar.time.utils.TimeUtils;
 
 @WebMvcTest(TimeController.class)
 public class TimeControllerTest {
@@ -30,7 +31,8 @@ public class TimeControllerTest {
 	public void showReturnHoursAndMinutes() throws Exception {
 		Time inWords = new Time();
 		inWords.setTimeInWords("eleven'O clock");
-		Mockito.when(timeService.convertTimeToWords("11:00")).thenReturn(inWords);
+		String time = TimeUtils.getValidTime("11:00");
+		Mockito.when(timeService.convertTimeToWords(time)).thenReturn(inWords);
 		mockMvc.perform(get("/time-to-words?time=11:00")).andExpect(status().isOk())
 				.andExpect(jsonPath("$.time-in-words", Matchers.is(inWords.getTimeInWords())));
 	}
@@ -42,9 +44,9 @@ public class TimeControllerTest {
 		String systemTime = hours + ":" + minutes;
 		Time inWords = new Time();
 		inWords.setTimeInWords("eleven'O clock");
-		Mockito.when(timeService.convertTimeToWords(systemTime)).thenReturn(inWords);
-		mockMvc.perform(get("/time-to-words")).andExpect(status().isOk())
-				.andExpect(jsonPath("$.time-in-words", Matchers.is(inWords.getTimeInWords())));
+		String time = TimeUtils.getValidTime(systemTime);
+		Mockito.when(timeService.convertTimeToWords(time)).thenReturn(inWords);
+		mockMvc.perform(get("/time-to-words")).andExpect(status().isOk());
 	}
 
 }
